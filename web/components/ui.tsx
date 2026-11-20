@@ -1,12 +1,15 @@
 "use client";
 
 import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ChevronLeft, ChevronRight, CircleAlert, CircleCheck } from "lucide-react";
 import { errorText } from "@/lib/api";
 
 export function Brand({ href = "/" }: { href?: string }) {
-  return <Link className="brand" href={href}><span className="brand-mark" aria-hidden="true" />Impulso</Link>;
+  return <Link className="brand" href={href}>
+    <Image src="/impulso-logo.webp" alt="Impulso" width={720} height={180} loading="eager" unoptimized />
+  </Link>;
 }
 
 export function ButtonLink({ href, children, kind = "primary" }: { href: string; children: ReactNode; kind?: "primary" | "secondary" }) {

@@ -90,7 +90,6 @@ export function Assistant({ business }: { business: string }) {
   return <div className="stack">
     <Back />
     <section className="assistant-intro stack">
-      <span className="tile-icon"><Sparkles size={25} /></span>
       <div><h2>Genera un análisis del día</h2><p>Consulta tus ventas, productos congelados o próximos a vencer y clientes inactivos.</p></div>
       <div><button className="button primary" onClick={() => void run()} disabled={action.busy}><Sparkles size={17} />{action.busy ? "Procesando…" : "Generar análisis"}</button></div>
     </section>

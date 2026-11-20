@@ -52,21 +52,12 @@ svg { flex-shrink: 0; }
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  font: 850 1.48rem/1 "Bricolage Grotesque", system-ui, sans-serif;
-  letter-spacing: -.065em;
-  color: #47206C;
-  white-space: nowrap;
+  width: clamp(8rem, 22vw, 11rem);
+  min-width: 0;
+  min-height: 44px;
+  max-width: 100%;
 }
-.brand-mark { position: relative; width: 30px; height: 23px; color: var(--accent); }
-.brand-mark::before, .brand-mark::after {
-  content: "";
-  position: absolute;
-  inset: 0 11px 0 0;
-  background: currentColor;
-  clip-path: polygon(0 8%, 42% 8%, 100% 50%, 42% 92%, 0 92%, 58% 50%);
-}
-.brand-mark::after { inset: 0 0 0 11px; }
+.brand img { display: block; width: 100%; height: auto; }
 .tile-icon { display: grid; place-items: center; flex: none; border-radius: 10px; width: 39px; height: 39px; }
 .tile-icon { background: var(--accent-soft); color: var(--accent-dark); }
 .button, .icon-button {

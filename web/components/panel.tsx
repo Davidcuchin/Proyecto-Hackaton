@@ -11,7 +11,7 @@ import {
 import { z } from "zod";
 import { api, ApiError, useAction, useResource } from "@/lib/api";
 import { displayDate, money, number, orderNames, orderTones, type Business, type Me, type Overview } from "@/lib/domain";
-import DashboardDesign, { DashboardShell, type DashboardDesignProps } from "./dashboard-design";
+import DashboardDesign, { AssistantMascot, DashboardShell, type DashboardDesignProps } from "./dashboard-design";
 import { Inventory } from "./inventory";
 import { Invoices } from "./invoices";
 import { SalesView } from "./sales";
@@ -137,7 +137,8 @@ export function Panel({ section }: { section: string[] }) {
   </>;
 
   const page = pages[active] ?? { heading: "Sección no encontrada", subtitle: "" };
-  return <DashboardShell {...page} commerce={business.name} navigation={navigation(active)} utilities={utilities}>
+  return <DashboardShell {...page} commerce={business.name} navigation={navigation(active)} utilities={utilities}
+    introArt={active === "asistente" ? <AssistantMascot /> : undefined}>
     {action.notice && <Notice {...action.notice} />}
     <div key={`${active}:${business.id}`}>
       {active === "inventario" && <Inventory business={business.id} openNew={section[1] === "nuevo"} />}

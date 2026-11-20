@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Plus, Sparkles } from "lucide-react";
 import { Badge, Brand, ButtonLink } from "./ui";
@@ -22,6 +23,7 @@ type ShellProps = {
   commerce: string;
   heading: string;
   subtitle?: string;
+  introArt?: ReactNode;
   utilities?: ReactNode;
   navigation: readonly NavigationLink[];
 };
@@ -49,7 +51,11 @@ function OrderDistribution({ title, segments }: DashboardDesignProps["chart"]) {
   </section>;
 }
 
-export function DashboardShell({ commerce, heading, subtitle, utilities, navigation, children }: ShellProps & { children: ReactNode }) {
+export function AssistantMascot() {
+  return <Image className={styles.assistantMascot} src="/impulso-assistant.webp" alt="" width={450} height={395} unoptimized />;
+}
+
+export function DashboardShell({ commerce, heading, subtitle, introArt, utilities, navigation, children }: ShellProps & { children: ReactNode }) {
   return <div className={styles.raiz}>
     <a className={styles.skip} href="#panel-contenido">Saltar al contenido</a>
     <header>
@@ -69,7 +75,10 @@ export function DashboardShell({ commerce, heading, subtitle, utilities, navigat
         </nav>
       </aside>
       <main id="panel-contenido" className={styles.workspace} tabIndex={-1}>
-        <div className={styles.intro}><h1>{heading}</h1>{subtitle && <p>{subtitle}</p>}</div>
+        <div className={styles.intro}>
+          <div><h1>{heading}</h1>{subtitle && <p>{subtitle}</p>}</div>
+          {introArt}
+        </div>
         {children}
       </main>
     </div>
@@ -87,7 +96,7 @@ export default function DashboardDesign({ primaryAction, metrics, chart, activit
           <ButtonLink kind="secondary" href={primaryAction.href}><Plus size={17} aria-hidden="true" />{primaryAction.label}</ButtonLink>
         </div>
       </div>
-      <div className={styles.bannerArt} aria-hidden="true"><span><Sparkles size={38} strokeWidth={1.6} /></span></div>
+      <div className={styles.bannerArt}><AssistantMascot /></div>
     </section>
 
     <ul className={styles.kpis} aria-label="Indicadores del comercio">

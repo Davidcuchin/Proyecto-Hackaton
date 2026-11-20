@@ -69,7 +69,7 @@
 }
 
 :where(.raiz) .top {
-  padding: 13px 4%;
+  padding: 11px 4%;
   display: flex;
   align-items: center;
   gap: 18px;
@@ -279,7 +279,10 @@
 }
 
 .workspace { min-width: 0; padding: 32px clamp(17px, 3vw, 52px) 55px; }
-.intro { overflow-wrap: anywhere; }
+.intro { display: flex; align-items: center; gap: 14px; overflow-wrap: anywhere; }
+.intro > div { min-width: 0; }
+.assistantMascot { display: block; height: auto; max-width: 100%; }
+.intro .assistantMascot { flex: none; width: clamp(68px, 12vw, 112px); }
 
 .summaryIcon {
   display: grid;
@@ -301,21 +304,9 @@
   display: grid;
   place-items: center;
   border-left: 1px solid #DAC5EE;
-  color: #6F369F;
   background: radial-gradient(ellipse at 30% 20%, #F1DDFD, transparent 70%), #E3CEF5;
 }
-
-.bannerArt > span {
-  display: grid;
-  place-items: center;
-  width: clamp(54px, 8vw, 89px);
-  aspect-ratio: 1;
-  border: 1px solid #F7F2FC;
-  border-radius: 24%;
-  background: #F8EFFC;
-  box-shadow: 0 9px 0 #D7BCEB;
-  transform: rotate(-9deg);
-}
+.bannerArt .assistantMascot { width: clamp(88px, 14vw, 155px); }
 
 .overviewCard { display: grid; gap: 14px; }
 .chartList { display: grid; gap: 8px; }
