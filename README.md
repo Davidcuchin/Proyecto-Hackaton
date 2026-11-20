@@ -19,4 +19,6 @@ configurada `DATABASE_URL`, ejecuta `npm.cmd run db:push`. `npm.cmd run db:seed`
 datos y escenarios de la demo.
 
 Las pantallas, autenticacion, rutas de negocio, integraciones y validaciones
-compartidas son puntos de partida, no funcionalidades implementadas.
+compartidas son puntos de partida, no funcionalidades implementadas. El
+dashboard muestra datos de demostracion y sus filtros cambian entre ejemplos;
+no consulta ventas reales ni gestiona campanas todavia.
