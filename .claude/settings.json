@@ -8,5 +8,5 @@
         "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-5.2",
         "CLAUDE_CODE_MAX_CONTEXT_TOKENS": "1000000"
     },
-    "effortLevel": "high"
+    "effortLevel": "max"
 }
