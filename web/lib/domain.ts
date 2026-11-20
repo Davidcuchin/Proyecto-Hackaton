@@ -1,0 +1,53 @@
+export type Page<T> = { items: T[]; total: number };
+export type Business = { id: string; name: string; slug: string; role?: string };
+export type User = { id: string; name: string; email: string };
+export type Me = { user: User; businesses: Business[] };
+export type OrderStatus = "PENDING" | "APPROVED" | "FAILED";
+export type Order = {
+  id: string; status: OrderStatus; createdAt: string; approvedAt: string | null;
+  total: string; subtotal: string; discountAmount: string;
+  customer: { id: string; user: { name: string; email: string } };
+  items: { id: string; productName: string; productId: string; quantity: number; unitPrice: number }[];
+};
+export type Totals = { revenue: string; units: string; orders: string };
+export type Overview = { today: Totals; recent: Order[]; counts: Partial<Record<OrderStatus, number>> };
+export type Product = {
+  id: string; name: string; sku: string; description: string; price: number; stock: number;
+  expiresAt: string | null; lowStockThreshold: number; isFrozen: boolean; expired: boolean; expiring: boolean;
+  lowStock: boolean; discountPercent: number; salePrice: number; available: boolean;
+};
+export type CatalogItem = Pick<Product, "id" | "name" | "sku" | "description" | "price" | "stock" | "expiresAt" | "discountPercent" | "salePrice">;
+export type Movement = { id: string; quantity: number; reason: string; createdAt: string };
+export type InvoiceLine = { productId: string; quantity: number; unitCost: number };
+export type Invoice = {
+  id: string; number: string; supplier: string; issuedOn: string; total: string; cancelledAt: string | null;
+  items: (InvoiceLine & { product: { id: string; name: string; sku: string } })[];
+};
+export type Segment = "VIP" | "REGULAR" | "INFREQUENT" | "AT_RISK";
+export type Customer = { id: string; name: string; email: string; segment: Segment; approvedOrdersCount: number;
+  daysSinceLastPurchase: number | null; marketingOptIn: boolean };
+export type CustomerPage = Page<Customer> & { counts: Record<Segment, number> };
+export type MailStatus = "QUEUED" | "SENDING" | "SENT" | "FAILED";
+export type Mail = { id: string; recipient: string; subject: string; status: MailStatus; createdAt: string };
+export type MailPage = Page<Mail> & { enabled: boolean };
+export type Coupon = { id: string; code: string; qrBase64: string; expiresAt: string; usedAt: string | null;
+  percent: number; minPurchaseAmount: number; maxDiscountAmount: number };
+export type Profile = { id: string; marketingOptIn: boolean; approvedOrdersCount: number };
+export type Period = "day" | "week" | "month" | "year";
+export type Sales = { totals: Totals; buckets: (Totals & { bucket: string; label: string })[] };
+export type RankedProduct = { id: string; sku: string; name: string; stock: number; units: string; revenue: string };
+export type Rankings = { byUnits: RankedProduct[]; byRevenue: RankedProduct[]; stagnant: RankedProduct[] };
+export type Analysis = { source: "rules" | "llm"; diagnosis: string; strategy: string; draft: string };
+
+const moneyFormat = new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 });
+const metricFormat = new Intl.NumberFormat("es-CL");
+const dateFormat = new Intl.DateTimeFormat("es-CL", { year: "numeric", month: "short", day: "numeric", timeZone: "America/Santiago" });
+export const money = (value: string | number | bigint) => moneyFormat.format(typeof value === "string" ? BigInt(value) : value);
+export const number = (value: string | number) => metricFormat.format(typeof value === "string" ? BigInt(value) : value);
+export const displayDate = (value: string) => dateFormat.format(new Date(value));
+export const inputDate = (value?: string | null) => value ? value.slice(0, 10) : "";
+export const today = () => new Intl.DateTimeFormat("sv-SE", { timeZone: "America/Santiago", dateStyle: "short" }).format(new Date());
+export const orderNames: Record<OrderStatus, string> = { PENDING: "Pendiente", APPROVED: "Aprobado", FAILED: "Rechazado" };
+export const orderTones = { PENDING: "amber", APPROVED: "violet", FAILED: "neutral" } as const;
+export const segmentNames: Record<Segment, string> = { VIP: "Frecuente / VIP", REGULAR: "Regular", INFREQUENT: "Poco frecuente", AT_RISK: "En riesgo" };
+export const mailNames: Record<MailStatus, string> = { QUEUED: "En cola", SENDING: "Enviando", SENT: "Enviado", FAILED: "Falló" };

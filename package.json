@@ -1,18 +1,24 @@
 {
-  "name": "proyecto-hackathon",
+  "name": "impulso-local",
   "private": true,
+  "version": "1.0.0",
   "workspaces": [
-    "packages/*",
-    "apps/*"
+    "api",
+    "web"
   ],
-  "scripts": {
-    "dev": "concurrently -k -n api,web \"npm run dev -w @proyecto/api\" \"npm run dev -w @proyecto/web\"",
-    "build": "npm run build -w @proyecto/shared && npm run build -w @proyecto/api && npm run build -w @proyecto/web",
-    "db:push": "npm run db:push -w @proyecto/api",
-    "db:seed": "npm run db:seed -w @proyecto/api"
+  "engines": {
+    "node": ">=22.12"
   },
-  "devDependencies": {
-    "concurrently": "^9.2.0",
-    "typescript": "^5.8.3"
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "dev": "node scripts/run.mjs dev",
+    "start": "node scripts/run.mjs start",
+    "build": "npm run check -w api && npm run build -w web",
+    "check": "npm run check --workspaces",
+    "test": "npm test -w api",
+    "test:integration": "npm run test:integration -w api",
+    "db:generate": "npm run db:generate -w api",
+    "db:migrate": "npm run db:migrate -w api",
+    "db:seed": "npm run db:seed -w api"
   }
 }

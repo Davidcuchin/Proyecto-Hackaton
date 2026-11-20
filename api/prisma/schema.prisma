@@ -1,0 +1,247 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BusinessRole {
+  OWNER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  APPROVED
+  FAILED
+}
+
+enum MailStatus {
+  QUEUED
+  SENDING
+  SENT
+  FAILED
+}
+
+enum SubscriptionStatus {
+  INACTIVE
+  ACTIVE
+}
+
+model User {
+  id          String    @id @default(cuid())
+  googleId    String?   @unique
+  passwordHash String?
+  email       String    @unique
+  name        String
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  memberships Membership[]
+  customers   Customer[]
+  sessions    Session[]
+}
+
+model Session {
+  tokenHash String   @id
+  userId    String
+  expiresAt DateTime @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Business {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  name         String
+  createdAt    DateTime      @default(now()) @db.Timestamptz(3)
+  memberships  Membership[]
+  customers    Customer[]
+  products     Product[]
+  invoices     Invoice[]
+  orders       Order[]
+  mail         MailJob[]
+  subscription Subscription?
+}
+
+model Membership {
+  userId     String
+  businessId String
+  role       BusinessRole @default(OWNER)
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business   Business     @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  @@id([userId, businessId])
+  @@index([businessId])
+}
+
+model Customer {
+  id                  String    @id @default(cuid())
+  businessId          String
+  userId              String
+  approvedOrdersCount Int       @default(0)
+  lastPurchaseAt      DateTime? @db.Timestamptz(3)
+  marketingOptIn      Boolean   @default(false)
+  createdAt           DateTime  @default(now()) @db.Timestamptz(3)
+  business            Business  @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  user                User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  orders              Order[]
+  coupons             Coupon[]
+  @@unique([businessId, userId])
+  @@unique([businessId, id])
+  @@index([businessId, lastPurchaseAt])
+  @@index([businessId, approvedOrdersCount])
+}
+
+model Product {
+  id                String    @id @default(cuid())
+  businessId        String
+  name              String
+  sku               String
+  description       String    @default("")
+  price             Int
+  stock             Int       @default(0)
+  lowStockThreshold Int       @default(5)
+  expiresAt         DateTime? @db.Date
+  isFrozen          Boolean   @default(false)
+  archivedAt        DateTime? @db.Timestamptz(3)
+  createdAt         DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime  @updatedAt @db.Timestamptz(3)
+  business          Business  @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  invoiceItems      InvoiceItem[]
+  orderItems        OrderItem[]
+  movements         StockMovement[]
+  @@unique([businessId, sku])
+  @@unique([businessId, id])
+  @@index([businessId, archivedAt, isFrozen, expiresAt])
+}
+
+model StockMovement {
+  id          String   @id @default(cuid())
+  businessId  String
+  productId   String
+  quantity    Int
+  reason      String
+  referenceId String?
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  product     Product  @relation(fields: [businessId, productId], references: [businessId, id], onDelete: Restrict)
+  @@index([businessId, productId, createdAt])
+}
+
+model Invoice {
+  id            String    @id @default(cuid())
+  businessId    String
+  number        String
+  supplier      String
+  issuedOn      DateTime  @db.Date
+  total         BigInt
+  cancelledAt   DateTime? @db.Timestamptz(3)
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+  business      Business  @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  items         InvoiceItem[]
+  @@unique([businessId, supplier, number])
+  @@unique([businessId, id])
+  @@index([businessId, issuedOn])
+}
+
+model InvoiceItem {
+  id          String  @id @default(cuid())
+  businessId  String
+  invoiceId   String
+  productId   String
+  quantity    Int
+  unitCost    Int
+  invoice     Invoice @relation(fields: [businessId, invoiceId], references: [businessId, id], onDelete: Cascade)
+  product     Product @relation(fields: [businessId, productId], references: [businessId, id], onDelete: Restrict)
+  @@unique([businessId, invoiceId, productId])
+  @@index([businessId, productId])
+}
+
+model Order {
+  id                String      @id @default(cuid())
+  businessId        String
+  customerId        String
+  status            OrderStatus @default(PENDING)
+  requestedCouponId String?
+  checkoutKey       String
+  subtotal          BigInt
+  discountAmount    BigInt      @default(0)
+  total             BigInt
+  createdAt         DateTime    @default(now()) @db.Timestamptz(3)
+  approvedAt        DateTime?   @db.Timestamptz(3)
+  business          Business    @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  customer          Customer    @relation(fields: [businessId, customerId], references: [businessId, id], onDelete: Restrict)
+  requestedCoupon   Coupon?     @relation("RequestedCoupon", fields: [businessId, customerId, requestedCouponId], references: [businessId, customerId, id], onDelete: Restrict)
+  earnedCoupon      Coupon?     @relation("EarnedCoupon")
+  items             OrderItem[]
+  @@unique([businessId, customerId, checkoutKey])
+  @@unique([businessId, customerId, id])
+  @@unique([businessId, id])
+  @@index([businessId, status, approvedAt])
+  @@index([businessId, createdAt])
+}
+
+model OrderItem {
+  id              String  @id @default(cuid())
+  businessId      String
+  orderId         String
+  productId       String
+  productName     String
+  quantity        Int
+  unitPrice       Int
+  discountPercent Int     @default(0)
+  discountShare   BigInt  @default(0)
+  order           Order   @relation(fields: [businessId, orderId], references: [businessId, id], onDelete: Restrict)
+  product         Product @relation(fields: [businessId, productId], references: [businessId, id], onDelete: Restrict)
+  @@unique([businessId, orderId, productId])
+  @@index([businessId, productId])
+}
+
+model Coupon {
+  id                String    @id @default(cuid())
+  code              String    @unique
+  businessId        String
+  customerId        String
+  earnedFromOrderId String
+  expiresAt         DateTime  @db.Timestamptz(3)
+  minPurchaseAmount Int
+  maxDiscountAmount Int
+  percent           Int
+  usedAt            DateTime? @db.Timestamptz(3)
+  createdAt         DateTime  @default(now()) @db.Timestamptz(3)
+  customer          Customer  @relation(fields: [businessId, customerId], references: [businessId, id], onDelete: Restrict)
+  earnedFromOrder   Order     @relation("EarnedCoupon", fields: [businessId, customerId, earnedFromOrderId], references: [businessId, customerId, id], onDelete: Restrict)
+  requestedBy       Order[]   @relation("RequestedCoupon")
+  @@unique([businessId, customerId, id])
+  @@unique([businessId, customerId, earnedFromOrderId])
+  @@index([businessId, customerId, expiresAt])
+}
+
+model MailJob {
+  id          String     @id @default(cuid())
+  businessId  String
+  dedupeKey   String     @unique
+  recipient   String
+  subject     String
+  body        String
+  couponCode  String?
+  marketingCustomerId String?
+  status      MailStatus @default(QUEUED)
+  attempts    Int        @default(0)
+  availableAt DateTime   @default(now()) @db.Timestamptz(3)
+  lockedUntil DateTime?  @db.Timestamptz(3)
+  leaseToken  String?
+  sentAt      DateTime?  @db.Timestamptz(3)
+  createdAt   DateTime   @default(now()) @db.Timestamptz(3)
+  business    Business   @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  @@index([status, availableAt])
+  @@index([status, lockedUntil])
+  @@index([businessId, createdAt])
+}
+
+model Subscription {
+  businessId String             @id
+  status     SubscriptionStatus @default(INACTIVE)
+  plan       String             @default("SIN_PLAN")
+  business   Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}

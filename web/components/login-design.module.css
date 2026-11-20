@@ -1,0 +1,265 @@
+/* Adaptado de DaleDoble · Portada.module.css */
+.raiz {
+  --ink: #1F2937;
+  --violet: #7140B5;
+  --purple: #65348F;
+  --paper: #F8FAFC;
+  --line: #DDD6ED;
+  --dim: #4C5261;
+  color-scheme: light;
+}
+
+:where(.raiz) {
+  box-sizing: border-box;
+}
+
+.raiz {
+  scroll-behavior: smooth;
+  scroll-padding-top: 18px;
+}
+
+.raiz {
+  margin: 0;
+  background: var(--paper);
+  font-family: "DM Sans","Atkinson Hyperlegible Next",system-ui,-apple-system,Arial,sans-serif;
+  color: var(--ink);
+  line-height: 1.55;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+:where(.raiz) h1,
+:where(.raiz) h2,
+:where(.raiz) h3 {
+  margin: 0;
+}
+
+:where(.raiz) h1,
+:where(.raiz) h2,
+:where(.raiz) h3 {
+  font-family: "Bricolage Grotesque","DM Sans",system-ui,sans-serif;
+  line-height: 1.08;
+  letter-spacing: -.048em;
+  text-wrap: balance;
+}
+
+:where(.raiz) h1 {
+  font-size: clamp(3.7rem,6.45vw,6.45rem);
+  font-weight: 840;
+  line-height: .99;
+}
+
+:where(.raiz) h1 em {
+  display: block;
+  font-family: "Instrument Serif",Georgia,serif;
+  font-weight: normal;
+  color: var(--violet);
+  letter-spacing: -.06em;
+  line-height: 1.07;
+}
+
+:where(.raiz) h2 {
+  font-size: clamp(2.15rem,4.1vw,3.8rem);
+  font-weight: 780;
+}
+
+:where(.raiz) h3 {
+  font-size: 1.5rem;
+  font-weight: 750;
+}
+
+:where(.raiz) .wrap {
+  width: min(1260px,90%);
+  margin: 0 auto;
+}
+
+:where(.raiz) .skip {
+  position: absolute;
+  left: 10px;
+  top: -100px;
+  z-index: 20;
+  background: white;
+  padding: 10px;
+}
+
+:where(.raiz) .skip:focus {
+  top: 10px;
+}
+
+:where(.raiz) header {
+  border-bottom: 1px solid var(--line);
+}
+
+:where(.raiz) .nav {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  gap: 34px;
+}
+
+:where(.raiz) .hero {
+  display: grid;
+  grid-template-columns: .98fr 1.05fr;
+  align-items: center;
+  gap: clamp(25px,4.2vw,75px);
+  padding: clamp(42px,5.2vw,82px) 0 58px;
+}
+
+:where(.raiz) .hero h1 {
+  margin: 18px 0;
+}
+
+:where(.raiz) .hero-copy>p {
+  font-size: clamp(1rem,1.42vw,1.2rem);
+  line-height: 1.6;
+  color: var(--dim);
+  max-width: 38ch;
+}
+
+:where(.raiz) .scene {
+  position: relative;
+  padding-bottom: 12px;
+}
+
+:where(.raiz) .stage {
+  position: relative;
+  aspect-ratio: 4/3;
+  border-radius: 34px 75px 32px 32px;
+  overflow: hidden;
+  background: #e7c0f4;
+  box-shadow: 0 9px 0 #e1d9f1,inset 0 0 0 1px #d3bedc;
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .raiz {
+    scroll-behavior: auto;
+  }
+}
+
+@media (min-width:1500px) {
+  :where(.raiz) .hero {
+    padding: 76px 0;
+  }
+
+  :where(.raiz) .stage {
+    max-height: 455px;
+  }
+}
+
+@media (max-width:900px) {
+
+  :where(.raiz) .nav {
+    gap: 17px;
+  }
+
+  :where(.raiz) .hero {
+    gap: 25px;
+  }
+
+  :where(.raiz) .stage {
+    border-radius: 26px 50px 26px 26px;
+  }
+
+}
+
+@media (max-width:740px) {
+  :where(.raiz) .wrap {
+    width: 90%;
+  }
+
+  :where(.raiz) .nav {
+    min-height: 66px;
+    gap: 10px;
+  }
+
+  :where(.raiz) .nav>nav {
+    display: none;
+  }
+
+  :where(.raiz) .hero {
+    grid-template-columns: 1fr;
+    padding: 33px 0 20px;
+    gap: 26px;
+  }
+
+  :where(.raiz) .hero h1 {
+    font-size: clamp(3.45rem,11vw,5.25rem);
+    margin: 13px 0 15px;
+  }
+
+  :where(.raiz) .hero-copy>p {
+    max-width: 46ch;
+  }
+
+  :where(.raiz) .stage {
+    max-height: 365px;
+    aspect-ratio: 1.5;
+  }
+}
+
+@media (max-width:380px) {
+
+  :where(.raiz) .nav {
+    gap: 6px;
+  }
+}
+
+:where(.raiz) .stage {
+  box-shadow: 0 7px 0 #E4D5F5;
+}
+
+:where(.raiz) .hero h1 em {
+  color: #7941BE;
+}
+
+.raiz { min-height: 100dvh; }
+.raiz > header { background: white; }
+.nav { justify-content: space-between; }
+.main { padding-bottom: 30px; }
+.hero, .hero-copy, .scene { min-width: 0; }
+
+.features { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 22px; }
+
+.features li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--purple);
+  font-size: .85rem;
+  font-weight: 650;
+}
+
+.stage {
+  display: grid;
+  align-items: center;
+  aspect-ratio: auto;
+  max-height: none;
+  min-height: 385px;
+  padding: clamp(16px, 4vw, 58px);
+  background: radial-gradient(ellipse at 92% 6%, #FAEEFF, transparent 68%), #E7C0F4;
+}
+
+.formCard {
+  position: relative;
+  border: 1px solid #DDC9EB;
+  border-radius: 19px;
+  padding: clamp(16px, 3vw, 28px);
+  background: #FFFCFF;
+  box-shadow: 0 14px 30px #58335E16;
+}
+
+.formCard :where(h2) { font-size: clamp(1.45rem, 3vw, 2.1rem); }
+.formCard .hint { color: var(--dim); font-size: .83rem; }
+
+@media (max-width: 740px) {
+  .stage { min-height: 0; max-height: none; aspect-ratio: auto; }
+}
+
+@media (max-width: 380px) {
+  .hero h1 { font-size: clamp(2.45rem, 12vw, 3.45rem); }
+  .stage { padding: 12px; border-radius: 20px 30px 20px 20px; }
+}
