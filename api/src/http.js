@@ -94,8 +94,18 @@ export function createApp() {
     res.set({ "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer" });
     if (!["GET", "HEAD", "OPTIONS"].includes(req.method)) {
       const origin = req.get("origin");
-      if ((origin && origin !== settings.appOrigin) || req.get("sec-fetch-site") === "cross-site") {
-        return next(new HttpError(403, "Origen de solicitud no permitido."));
+      const fetchSite = req.get("sec-fetch-site");
+      const forwardedHost = req.get("x-forwarded-host");
+      // Next supplies the original Host. Only local development can use loopback aliases.
+      const localOrigin = settings.localAppHosts.includes(forwardedHost) &&
+        (origin === `http://${forwardedHost}` || (origin === "null" && fetchSite === "same-origin"));
+      const crossSite = fetchSite === "cross-site";
+      if (crossSite || (origin && origin !== settings.appOrigin && !localOrigin)) {
+        const message = "Origen de solicitud no permitido.";
+        const reason = crossSite ? "solicitud desde otro sitio"
+          : origin === "null" ? "el navegador ocultó el origen" : "origen distinto al configurado";
+        const debug = ` Debug: ${reason}. Abre ${settings.appOrigin}.`;
+        return next(new HttpError(403, process.env.NODE_ENV === "production" ? message : message + debug));
       }
       if (!req.is("application/json") && Number(req.get("content-length") ?? 0) > 0) {
         return next(new HttpError(415, "Usa el formato application/json."));

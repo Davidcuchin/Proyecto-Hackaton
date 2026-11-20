@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const config: NextConfig = {
   poweredByHeader: false,
+  experimental: { proxyTimeout: 60_000 },
   async rewrites() {
     const origin = process.env.API_INTERNAL_ORIGIN ?? "http://127.0.0.1:4318";
     return [
