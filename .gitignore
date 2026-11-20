@@ -1,4 +1,9 @@
 .claude/settings.local.json
-/node_modules/
-/.next/
+node_modules/
+.next/
+dist/
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
 .DS_Store

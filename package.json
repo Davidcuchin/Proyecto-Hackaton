@@ -1,0 +1,18 @@
+{
+  "name": "proyecto-hackathon",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n api,web \"npm run dev -w @proyecto/api\" \"npm run dev -w @proyecto/web\"",
+    "build": "npm run build -w @proyecto/shared && npm run build -w @proyecto/api && npm run build -w @proyecto/web",
+    "db:push": "npm run db:push -w @proyecto/api",
+    "db:seed": "npm run db:seed -w @proyecto/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "typescript": "^5.8.3"
+  }
+}
