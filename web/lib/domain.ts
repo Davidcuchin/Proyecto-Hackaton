@@ -1,5 +1,5 @@
 export type Page<T> = { items: T[]; total: number };
-export type Business = { id: string; name: string; slug: string; role?: string };
+export type Business = { id: string; name: string; slug: string; logoPath?: string | null; role?: string };
 export type User = { id: string; name: string; email: string };
 export type Me = { user: User; businesses: Business[] };
 export type OrderStatus = "PENDING" | "APPROVED" | "FAILED";
@@ -10,9 +10,10 @@ export type Order = {
   items: { id: string; productName: string; productId: string; quantity: number; unitPrice: number }[];
 };
 export type Totals = { revenue: string; units: string; orders: string };
-export type Overview = { today: Totals; recent: Order[]; counts: Partial<Record<OrderStatus, number>> };
+export type CategoryRevenue = { category: string | null; revenue: string };
+export type Overview = { today: Totals; recent: Order[]; counts: Partial<Record<OrderStatus, number>>; categories: CategoryRevenue[] };
 export type Product = {
-  id: string; name: string; sku: string; description: string; price: number; stock: number;
+  id: string; name: string; sku: string; description: string; category: string | null; price: number; stock: number;
   expiresAt: string | null; lowStockThreshold: number; isFrozen: boolean; expired: boolean; expiring: boolean;
   lowStock: boolean; discountPercent: number; salePrice: number; available: boolean;
 };

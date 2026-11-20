@@ -125,5 +125,5 @@ export async function memberships(userId: string) {
     where: { userId }, orderBy: [{ business: { name: "asc" } }, { businessId: "asc" }],
     include: { business: true },
   });
-  return rows.map(row => ({ id: row.businessId, slug: row.business.slug, name: row.business.name, role: row.role }));
+  return rows.map(({ business, role }) => ({ id: business.id, slug: business.slug, name: business.name, logoPath: business.logoPath, role }));
 }

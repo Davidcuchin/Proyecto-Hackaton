@@ -12,6 +12,10 @@ export function Brand({ href = "/" }: { href?: string }) {
   </Link>;
 }
 
+export function BusinessLogo({ src, size, className }: { src: string; size: number; className: string }) {
+  return <Image className={className} src={src} alt="" width={size} height={size} unoptimized />;
+}
+
 export function ButtonLink({ href, children, kind = "primary" }: { href: string; children: ReactNode; kind?: "primary" | "secondary" }) {
   return <Link href={href} className={`button ${kind}`}>{children}</Link>;
 }

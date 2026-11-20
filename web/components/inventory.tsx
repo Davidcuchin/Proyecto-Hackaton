@@ -12,6 +12,7 @@ const size = 20;
 const scheme = z.object({
   name: z.string().trim().min(1).max(120),
   sku: z.string().trim().min(1).max(40),
+  category: z.string().trim().max(60).transform(value => value || null),
   description: z.string().max(500),
   price: z.coerce.number().int().min(1).max(100_000_000),
   lowStockThreshold: z.coerce.number().int().min(0).max(1_000_000),
@@ -39,7 +40,7 @@ function ProductEditor({ business, editor, onClose, onSaved }: {
         return;
       }
       const parsed = scheme.safeParse(Object.fromEntries(form));
-      if (!parsed.success) throw new Error("Revisa el nombre, código, precio y stock mínimo.");
+      if (!parsed.success) throw new Error("Revisa el nombre, código, categoría, precio y stock mínimo.");
       await api(product ? `/products/${product.id}` : "/products", {
         method: product ? "PATCH" : "POST", business,
         body: product ? parsed.data : { ...parsed.data, stock: Number(form.get("stock")) },
@@ -70,6 +71,7 @@ function ProductEditor({ business, editor, onClose, onSaved }: {
         <div className="form-grid">
           <Field label="Nombre"><input name="name" maxLength={120} defaultValue={product?.name} required /></Field>
           <Field label="SKU"><input name="sku" maxLength={40} defaultValue={product?.sku} required /></Field>
+          <Field label="Categoría"><input name="category" maxLength={60} defaultValue={product?.category ?? ""} placeholder="Ej. Herramientas" /></Field>
           <Field label="Precio en CLP"><input name="price" type="number" min={1} max={100_000_000} defaultValue={product?.price} required /></Field>
           <Field label="Stock mínimo"><input name="lowStockThreshold" type="number" min={0} max={1_000_000} defaultValue={product?.lowStockThreshold ?? 5} required /></Field>
           {!product && <Field label="Stock inicial"><input name="stock" type="number" min={0} max={1_000_000} defaultValue={0} required /></Field>}
@@ -130,7 +132,7 @@ export function Inventory({ business, openNew }: { business: string; openNew: bo
       {products.data && (products.data.items.length === 0 ? <Empty>{search ? "No hay productos que coincidan con la búsqueda." : "Agrega tu primer producto."}</Empty> : <div className="table-scroll">
         <table><thead><tr><th>Producto</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Acciones</th></tr></thead>
           <tbody>{products.data.items.map(product => <tr key={product.id}>
-            <td><strong>{product.name}</strong><small>{product.sku}{product.expiresAt && ` · Vence ${inputDate(product.expiresAt)}`}</small></td>
+            <td><strong>{product.name}</strong><small>{product.sku}{product.category && ` · ${product.category}`}{product.expiresAt && ` · Vence ${inputDate(product.expiresAt)}`}</small></td>
             <td>{money(product.salePrice)}{product.discountPercent > 0 && <small><del>{money(product.price)}</del> · {product.discountPercent}% dcto.</small>}</td>
             <td>{product.stock}<small>Mín. {product.lowStockThreshold}</small></td>
             <td><div className="actions compact">

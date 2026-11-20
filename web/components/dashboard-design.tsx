@@ -2,7 +2,8 @@ import type { CSSProperties, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Plus, Sparkles } from "lucide-react";
-import { Badge, Brand, ButtonLink } from "./ui";
+import { money, type CategoryRevenue } from "@/lib/domain";
+import { Badge, Brand, BusinessLogo, ButtonLink, Empty } from "./ui";
 import styles from "./dashboard-design.module.css";
 
 type LinkItem = { label: string; href: string };
@@ -21,6 +22,7 @@ type Activity = {
 
 type ShellProps = {
   commerce: string;
+  logoPath?: string | null;
   heading: string;
   subtitle?: string;
   introArt?: ReactNode;
@@ -32,6 +34,7 @@ export type DashboardDesignProps = ShellProps & {
   primaryAction: LinkItem;
   metrics: readonly Metric[];
   chart: { title: string; segments: readonly Segment[] };
+  categorySales: readonly CategoryRevenue[];
   activity: { title: string; viewAll: LinkItem; rows: readonly Activity[] };
 };
 
@@ -55,7 +58,48 @@ export function AssistantMascot() {
   return <Image className={styles.assistantMascot} src="/impulso-assistant.webp" alt="" width={450} height={395} unoptimized />;
 }
 
-export function DashboardShell({ commerce, heading, subtitle, introArt, utilities, navigation, children }: ShellProps & { children: ReactNode }) {
+const categoryColors = ["#7140b5", "#00837f", "#c57515", "#4b66ba", "#ad4e82", "#758093"];
+const percent = new Intl.NumberFormat("es-CL", { style: "percent", maximumFractionDigits: 1 });
+
+function CategorySales({ categories }: { categories: readonly CategoryRevenue[] }) {
+  const zero = BigInt(0);
+  const sales = categories.map(({ category, revenue }) => ({ category, revenue: BigInt(revenue) }))
+    .filter(({ revenue }) => revenue > zero);
+  const total = sales.reduce((sum, { revenue }) => sum + revenue, zero);
+  const visible = sales.length <= categoryColors.length ? sales : sales.slice(0, categoryColors.length - 1);
+  const rows = visible.map(({ category, revenue }) => ({ key: `category:${category ?? ""}`, label: category ?? "Sin categoría", revenue }));
+  if (visible.length < sales.length) {
+    rows.push({ key: "other", label: "Otras categorías", revenue: sales.slice(visible.length).reduce((sum, row) => sum + row.revenue, zero) });
+  }
+
+  let cumulative = zero;
+  const segments = rows.map((row, index) => {
+    const start = Number(cumulative) / Number(total);
+    cumulative += row.revenue;
+    return { ...row, color: categoryColors[index], start, end: Number(cumulative) / Number(total) };
+  });
+  const stops = segments.map(({ color, start, end }) => `${color} ${start * 100}% ${end * 100}%`).join(", ");
+  const background = segments.length === 1 ? segments[0].color : `conic-gradient(${stops})`;
+
+  return <section className={`card ${styles.overviewCard} ${styles.categorySales}`} aria-labelledby="category-sales-title">
+    <div className={styles.cardHeader}><h2 id="category-sales-title">Ventas por categoría</h2><Badge>Últimos 30 días</Badge></div>
+    {segments.length === 0 ? <Empty>Todavía no hay ingresos por ventas aprobadas en este período.</Empty> :
+      <div className={styles.categoryLayout}>
+        <div className={styles.categoryRing} style={{ background }}>
+          <div className={styles.categoryTotal}><span>Ventas netas</span><strong>{money(total)}</strong></div>
+        </div>
+        <ul className={styles.categoryLegend} aria-label="Ingresos por categoría">
+          {segments.map(({ key, label, revenue, color }) => <li key={key}>
+            <i aria-hidden="true" style={{ backgroundColor: color }} />
+            <span>{label}</span><strong>{money(revenue)}</strong>
+            <span className={styles.categoryPercent}>{percent.format(Number(revenue) / Number(total))}</span>
+          </li>)}
+        </ul>
+      </div>}
+  </section>;
+}
+
+export function DashboardShell({ commerce, logoPath, heading, subtitle, introArt, utilities, navigation, children }: ShellProps & { children: ReactNode }) {
   return <div className={styles.raiz}>
     <a className={styles.skip} href="#panel-contenido">Saltar al contenido</a>
     <header>
@@ -66,7 +110,10 @@ export function DashboardShell({ commerce, heading, subtitle, introArt, utilitie
     </header>
     <div className={styles.layout}>
       <aside className={styles.side}>
-        <p className={styles.commerce}>{commerce}</p>
+        <p className={styles.commerce}>
+          {logoPath && <BusinessLogo src={logoPath} size={44} className={styles.commerceLogo} />}
+          <span>{commerce}</span>
+        </p>
         <nav className={styles.menu} aria-label="Navegación principal">
           {navigation.map(({ label, href, active, icon }) =>
             <Link key={href} className={styles.navLink} href={href} aria-current={active ? "page" : undefined}>
@@ -85,7 +132,7 @@ export function DashboardShell({ commerce, heading, subtitle, introArt, utilitie
   </div>;
 }
 
-export default function DashboardDesign({ primaryAction, metrics, chart, activity, ...shell }: DashboardDesignProps) {
+export default function DashboardDesign({ primaryAction, metrics, chart, categorySales, activity, ...shell }: DashboardDesignProps) {
   return <DashboardShell {...shell}>
     <section className={styles.banner} aria-labelledby="panel-assistant">
       <div>
@@ -106,6 +153,8 @@ export default function DashboardDesign({ primaryAction, metrics, chart, activit
         <strong>{value}</strong>
       </li>)}
     </ul>
+
+    <CategorySales categories={categorySales} />
 
     <div className={styles.grid}>
       <OrderDistribution {...chart} />

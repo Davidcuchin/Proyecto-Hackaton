@@ -10,6 +10,7 @@ export const businessInput = z.object({ name: text(80), slug }).strict();
 export const productInput = z.object({
   name: text(120), sku: text(40).transform(value => value.toUpperCase()),
   description: z.string().trim().max(500),
+  category: text(60).nullable().optional(),
   price: amount.min(1), lowStockThreshold: stock, expiresAt: date.nullable(),
 }).strict();
 export const createProductInput = productInput.extend({

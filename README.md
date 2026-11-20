@@ -32,9 +32,11 @@ Activa `DEMO_MODE=true` en `api/.env` y ejecuta `npm run db:seed` después de ap
 | Perfil | Correo | Contraseña |
 | --- | --- | --- |
 | Emprendedor | `emprendedora@impulso.test` | `ImpulsoDemo2026!` |
+| Ferretería El Martillo | `ferreteria@impulso.test` | `FerreteriaDemo2026!` |
+| Peluquería Estilo Dorado | `peluqueria@impulso.test` | `PeluqueriaDemo2026!` |
 | Comprador | `comprador@impulso.test` | `CompraDemo2026!` |
 
-El emprendedor entra al panel de **Mercado del Valle**, con inventario y un pedido pendiente para aprobar. El comprador entra a **Mercado del Valle**, donde puede hacer pedidos y ver sus cupones. Se pueden usar dos perfiles de navegador para mantener ambas sesiones abiertas. Las cuentas de ejemplo están habilitadas durante el desarrollo en localhost.
+Cada emprendedor entra al panel de su comercio, con inventario, ventas de ejemplo y un pedido pendiente. El comprador entra a **Mercado del Valle**, donde puede hacer pedidos y ver sus cupones. Se pueden usar perfiles de navegador separados para mantener varias sesiones abiertas. Las cuentas de ejemplo están habilitadas durante el desarrollo en localhost.
 
 ## Configurar integraciones
 
@@ -58,6 +60,7 @@ El asistente muestra un diagnóstico por reglas locales cuando faltan la URL o e
 - Desde la segunda compra aprobada, cada compra nueva genera un cupón único para ese comprador y comercio. Dura 14 días y aplica un 15 % desde $5.000 con tope de $3.000. Se valida al crear el pedido y se consume al aprobarlo.
 - El ranking de clientes usa número de compras y días de inactividad. Son VIP quienes suman cinco compras o más en su historial y tienen actividad en los últimos 30 días. Son regulares quienes suman dos o más y tienen actividad en los últimos 45 días. A los 60 días de inactividad entran en riesgo. El resto queda como poco frecuente. Los recordatorios requieren autorización del cliente y se registran una vez al día por cliente.
 - Las ventas se agrupan en el día, semana, mes o año calendario de Santiago. Los rankings de productos usan las ventas aprobadas de los últimos 30 días. Los ingresos consideran descuentos de producto y cupones. La suscripción tiene un estado inicial inactivo y queda preparada para una integración futura.
+- El gráfico del resumen distribuye los ingresos netos de los últimos 30 días según la categoría actual de cada producto. Los productos sin categoría aparecen como «Sin categoría». Puedes asignar categorías desde el inventario.
 
 ## API
 

@@ -198,6 +198,7 @@ td strong { overflow-wrap: anywhere; }
 .store-hero h1 { font-size: clamp(1.9rem, 5vw, 3.25rem); letter-spacing: -.065em; overflow-wrap: anywhere; }
 .store-hero p { margin-top: 5px; }
 .store-hero-icon { display: grid; flex: none; place-items: center; width: 76px; height: 76px; background: #fff; border-radius: 19px; color: var(--accent-dark); transform: rotate(-10deg); }
+.store-hero-logo { flex: none; width: clamp(58px, 13vw, 104px); height: auto; border-radius: 17px; object-fit: cover; }
 .store-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(265px, 335px); gap: clamp(14px, 2vw, 24px); align-items: start; }
 .cart { position: sticky; top: 12px; scroll-margin-top: 12px; }
 .cart-total { padding: 10px 12px; border-radius: 10px; background: #F3EEFA; }

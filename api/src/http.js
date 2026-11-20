@@ -10,7 +10,7 @@ import {
   invoiceDetails, listInvoices, productDetails, saveInvoice, updateProduct,
 } from "./inventory.js";
 import { ensureCustomer, getCustomer, listOrders, placeOrder, resolveOrder } from "./orders.js";
-import { rankings, sales, periods } from "./analytics.js";
+import { rankings, sales, salesByCategory, periods } from "./analytics.js";
 import { customerCoupons, customerRanking, queueReminder, segments } from "./customers.js";
 import { analyzeBusiness } from "./ai.js";
 import { mailEnabled } from "./mail.js";
@@ -40,7 +40,7 @@ const administrate = route(async (req, _res, next) => {
 
 const storefront = route(async (req, _res, next) => {
   req.store = await db.business.findUnique({
-    where: { slug: slug.parse(req.params.slug) }, select: { id: true, name: true, slug: true },
+    where: { slug: slug.parse(req.params.slug) }, select: { id: true, name: true, slug: true, logoPath: true },
   });
   if (!req.store) throw new HttpError(404, "Tienda no encontrada.");
   next();
@@ -208,12 +208,14 @@ export function createApp() {
   }));
   admin.get("/analytics/overview", route(async (req, res) => {
     const businessId = businessOf(req);
-    const [today, recent, summary] = await Promise.all([
+    const [today, recent, summary, categories] = await Promise.all([
       sales(businessId, "day"),
       listOrders(businessId, 0, 6),
       db.order.groupBy({ by: ["status"], where: { businessId }, _count: { _all: true } }),
+      salesByCategory(businessId),
     ]);
-    res.json({ today: today.totals, recent: recent.items, counts: Object.fromEntries(summary.map(row => [row.status, row._count._all])) });
+    res.json({ today: today.totals, recent: recent.items, categories,
+      counts: Object.fromEntries(summary.map(row => [row.status, row._count._all])) });
   }));
 
   admin.get("/customers", route(async (req, res) => {

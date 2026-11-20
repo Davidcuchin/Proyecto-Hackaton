@@ -12,6 +12,7 @@ const windows = {
 } as const;
 type Bucket = { bucket: string; label: string; units: bigint; revenue: bigint; orders: bigint };
 type RankedProduct = { id: string; name: string; sku: string; stock: number; units: bigint; revenue: bigint };
+type CategoryRevenue = { category: string | null; revenue: bigint };
 
 export async function sales(businessId: string, period: Period) {
   const [window, group, length, step, format] = windows[period];
@@ -44,6 +45,19 @@ export async function sales(businessId: string, period: Period) {
     units: sum.units + row.units, revenue: sum.revenue + row.revenue, orders: sum.orders + row.orders,
   }), { units: 0n, revenue: 0n, orders: 0n });
   return { period, timezone: zone, buckets, totals };
+}
+
+export function salesByCategory(businessId: string) {
+  return db.$queryRaw<CategoryRevenue[]>`
+    SELECT p.category, SUM(i.quantity::bigint * i."unitPrice" - i."discountShare")::bigint AS revenue
+    FROM "Order" o
+    JOIN "OrderItem" i ON i."businessId" = o."businessId" AND i."orderId" = o.id
+    JOIN "Product" p ON p."businessId" = i."businessId" AND p.id = i."productId"
+    WHERE o."businessId" = ${businessId} AND o.status = 'APPROVED'
+      AND o."approvedAt" >= now() - INTERVAL '30 days'
+    GROUP BY p.category
+    ORDER BY revenue DESC, p.category ASC NULLS LAST
+  `;
 }
 
 export async function rankings(businessId: string) {

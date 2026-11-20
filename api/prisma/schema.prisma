@@ -55,6 +55,7 @@ model Business {
   id           String        @id @default(cuid())
   slug         String        @unique
   name         String
+  logoPath     String?
   createdAt    DateTime      @default(now()) @db.Timestamptz(3)
   memberships  Membership[]
   customers    Customer[]
@@ -99,6 +100,7 @@ model Product {
   name              String
   sku               String
   description       String    @default("")
+  category          String?
   price             Int
   stock             Int       @default(0)
   lowStockThreshold Int       @default(5)

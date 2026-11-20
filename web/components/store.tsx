@@ -10,7 +10,7 @@ import {
   type Me, type Order, type Page, type Profile,
 } from "@/lib/domain";
 import { OrderHistory } from "./sales";
-import { Badge, Brand, Empty, Failure, Field, Loading, Notice, Pagination } from "./ui";
+import { Badge, Brand, BusinessLogo, Empty, Failure, Field, Loading, Notice, Pagination } from "./ui";
 
 type CartItem = Pick<CatalogItem, "id" | "name" | "salePrice" | "stock"> & { quantity: number };
 const size = 12;
@@ -145,7 +145,8 @@ export function Store({ slug }: { slug: string }) {
     <main className="storefront storefront-width stack roomy">
       <div className="store-hero">
         <div><h1>{store.data.name}</h1><p>Encuentra productos y ofertas disponibles en esta tienda.</p></div>
-        <span className="store-hero-icon"><StoreIcon size={39} strokeWidth={1.6} /></span>
+        {store.data.logoPath ? <BusinessLogo src={store.data.logoPath} size={104} className="store-hero-logo" />
+          : <span className="store-hero-icon"><StoreIcon size={39} strokeWidth={1.6} /></span>}
       </div>
 
       {action.notice && <Notice {...action.notice} />}

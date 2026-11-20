@@ -71,10 +71,11 @@ function BusinessForm({ onCreated }: { onCreated: (business: Business) => void }
 
 function OverviewPage({ business, utilities }: { business: Business; utilities: DashboardDesignProps["utilities"] }) {
   const overview = useResource<Overview>("/analytics/overview", business.id);
-  const shell = { commerce: business.name, ...pages.resumen, utilities, navigation: navigation("resumen") };
+  const shell = { commerce: business.name, logoPath: business.logoPath, ...pages.resumen, utilities, navigation: navigation("resumen") };
   if (!overview.data) return <DashboardShell {...shell}>{overview.error ? <Failure error={overview.error} reload={overview.reload} /> : <Loading />}</DashboardShell>;
   const { today, recent, counts } = overview.data;
   return <DashboardDesign {...shell}
+    categorySales={overview.data.categories ?? []}
     primaryAction={newProduct}
     metrics={[
       { label: "Ingresos de hoy", value: money(today.revenue), icon: <ChartNoAxesCombined size={17} /> },
@@ -137,7 +138,7 @@ export function Panel({ section }: { section: string[] }) {
   </>;
 
   const page = pages[active] ?? { heading: "Sección no encontrada", subtitle: "" };
-  return <DashboardShell {...page} commerce={business.name} navigation={navigation(active)} utilities={utilities}
+  return <DashboardShell {...page} commerce={business.name} logoPath={business.logoPath} navigation={navigation(active)} utilities={utilities}
     introArt={active === "asistente" ? <AssistantMascot /> : undefined}>
     {action.notice && <Notice {...action.notice} />}
     <div key={`${active}:${business.id}`}>
